@@ -5403,18 +5403,21 @@ class RunCardNLO(RunCard):
 
         # for lepton-lepton collisions, ignore 'pdlabel' and 'lhaid'
         if abs(self['lpp1'])!=1 or abs(self['lpp2'])!=1:
-            if self['lpp1'] == 1 or self['lpp2']==1:
-                raise InvalidRunCard('Process like Deep Inelastic scattering not supported at NLO accuracy.')
+            # to be removed
+            #if self['lpp1'] == 1 or self['lpp2']==1:
+            #    raise InvalidRunCard('Process like deep-inelastic scattering under construction at NLO accuracy.')
 
             if abs(self['lpp1']) == abs(self['lpp2']) in [3,4]:
                 # for dressed lepton collisions, check that the lhaid is a valid one
                 if self['pdlabel'] not in sum(self.allowed_lep_densities.values(),[]) + ['emela']:
                     raise InvalidRunCard('pdlabel %s not allowed for dressed-lepton collisions' % self['pdlabel'])
             
-            elif self['pdlabel']!='nn23nlo' or self['reweight_pdf']:
-                self['pdlabel']='nn23nlo'
-                self['reweight_pdf']=[False]
-                logger.info('''Lepton-lepton collisions: ignoring PDF related parameters in the run_card.dat (pdlabel, lhaid, reweight_pdf, ...)''')
+            if abs(self['lpp1'])!=1 and abs(self['lpp2'])!=1:
+                # for mixed lepton-lepton beams
+                if self['pdlabel']!='nn23nlo' or self['reweight_pdf']:
+                    self['pdlabel']='nn23nlo'
+                    self['reweight_pdf']=[False]
+                    logger.info('''Lepton-lepton collisions: ignoring PDF related parameters in the run_card.dat (pdlabel, lhaid, reweight_pdf, ...)''')
         
             if self['lpp1'] == 0  == self['lpp2']:
                 if self['pdlabel']!='nn23nlo' or self['reweight_pdf']:
